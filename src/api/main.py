@@ -1,44 +1,28 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from api.schemas import ForecastRequest, ForecastResponse
 from models.load_model import load_model
+from api.v1.health import router as health_router
+from api.v1.forecast import router as forecast_router
+
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="RetailAI-ZA Forecast API",
-    version="0.1.0"
+    version="1.0.0"
 )
 
+app.state.limiter = limiter
 
-@app.get("/health", tags=["system"])
-def health_check():
-    return {
-        "status": "ok",
-        "service": "forecast-api",
-        "model_backend": "prophet",
-        "environment": "local",
-    }
-
-
-@app.post("/forecast", response_model=ForecastResponse)
-def forecast(request: ForecastRequest):
-    model = load_model(request.store_id, request.product_id)
-    
-    if model is None:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Model not found for {request.store_id}-{request.product_id}"
-        )
-    
-    future = model.make_future_dataframe(periods=request.days)
-    forecast_df = model.predict(future).tail(request.days)
-    
-    forecasts = [
-        {"date": str(row.ds.date()), "forecast": float(row.yhat)}
-        for _, row in forecast_df.iterrows()
-    ]
-    
-    return ForecastResponse(
-        store_id=request.store_id,
-        product_id=request.product_id,
-        horizon_days=request.days,
-        forecasts=forecasts,
+@app.exception_handler(RateLimitExceeded)
+def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded"}
     )
+
+app.include_router(health_router, prefix="/v1")
+app.include_router(forecast_router, prefix="/v1")
