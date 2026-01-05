@@ -1,32 +1,31 @@
 from fastapi import APIRouter, HTTPException
-from src.models.load_model import (
-    load_model,
-    ModelNotFoundError,
-    InvalidModelMetadataError,
-)
+from api.schemas import ForecastRequest, ForecastResponse
+from models.load_model import load_model
 
-router = APIRouter(prefix="/forecast", tags=["forecast"])
+router = APIRouter(tags=["forecast"])
 
+@router.post("/forecast", response_model=ForecastResponse)
+def forecast(request: ForecastRequest):
+    model = load_model(request.store_id, request.product_id)
 
-@router.post("")
-def forecast(store_id: str, product_id: str):
-    try:
-        model, metadata = load_model(store_id, product_id)
-    except ModelNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except InvalidModelMetadataError as e:
-        raise HTTPException(status_code=422, detail=str(e))
-    except Exception:
-        raise HTTPException(status_code=500, detail="Model loading failed")
+    if model is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Model not found for {request.store_id}-{request.product_id}"
+        )
 
-    # Placeholder prediction logic
-    horizon = metadata["horizon_days"]
-    return {
-        "store_id": store_id,
-        "product_id": product_id,
-        "horizon_days": horizon,
-        "forecasts": [
-            {"day": i + 1, "forecast": 0.0} for i in range(horizon)
-        ],
-    }
+    future = model.make_future_dataframe(periods=request.days)
+    forecast_df = model.predict(future).tail(request.days)
+
+    forecasts = [
+        {"date": str(row.ds.date()), "forecast": float(row.yhat)}
+        for _, row in forecast_df.iterrows()
+    ]
+
+    return ForecastResponse(
+        store_id=request.store_id,
+        product_id=request.product_id,
+        horizon_days=request.days,
+        forecasts=forecasts,
+    )
 

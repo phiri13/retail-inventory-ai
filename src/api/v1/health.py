@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(tags=["system"])
 
-@router.get("/health", tags=["system"])
+@router.get("/health")
 def health_check():
     return {
         "status": "ok",
         "service": "forecast-api",
-        "version": "v1"
+        "model_backend": "prophet",
+        "environment": "local",
     }
+
