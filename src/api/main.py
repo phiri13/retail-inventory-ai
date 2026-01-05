@@ -1,5 +1,6 @@
-from fastapi import FastAPI
-from src.api.schemas import ForecastRequest, ForecastResponse
+from fastapi import FastAPI, HTTPException
+from api.schemas import ForecastRequest, ForecastResponse
+from models.load_model import load_model
 
 app = FastAPI(
     title="RetailAI-ZA Forecast API",
@@ -19,13 +20,25 @@ def health_check():
 
 @app.post("/forecast", response_model=ForecastResponse)
 def forecast(request: ForecastRequest):
-    # TEMP placeholder — real model wiring comes later
-    return {
-        "store_id": request.store_id,
-        "product_id": request.product_id,
-        "horizon_days": request.days,
-        "forecasts": [
-            {"date": "2025-01-01", "forecast": 123.4}
-        ],
-    }
-
+    model = load_model(request.store_id, request.product_id)
+    
+    if model is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Model not found for {request.store_id}-{request.product_id}"
+        )
+    
+    future = model.make_future_dataframe(periods=request.days)
+    forecast_df = model.predict(future).tail(request.days)
+    
+    forecasts = [
+        {"date": str(row.ds.date()), "forecast": float(row.yhat)}
+        for _, row in forecast_df.iterrows()
+    ]
+    
+    return ForecastResponse(
+        store_id=request.store_id,
+        product_id=request.product_id,
+        horizon_days=request.days,
+        forecasts=forecasts,
+    )

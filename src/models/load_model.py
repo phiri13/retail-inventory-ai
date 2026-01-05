@@ -1,14 +1,13 @@
+from pathlib import Path
 import joblib
-import os
 
-MODEL_DIR = "models/prophet"
+MODEL_DIR = Path("models/prophet")
 
-_models = {}
+def load_model(store_id: str, product_id: str):
+    model_path = MODEL_DIR / f"{store_id}_{product_id}.pkl"
 
-def load_models():
-    for file in os.listdir(MODEL_DIR):
-        if file.endswith(".pkl"):
-            key = file.replace(".pkl", "")
-            _models[key] = joblib.load(os.path.join(MODEL_DIR, file))
+    if not model_path.exists():
+        return None
 
-    return _models
+    return joblib.load(model_path)
+
