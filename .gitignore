@@ -25,3 +25,8 @@ data/
 .vscode/
 .idea/
 *.swp
+
+# Ignore trained binary artifacts only
+*.pkl
+*.joblib
+*.onnx
