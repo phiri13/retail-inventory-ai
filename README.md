@@ -1,6 +1,6 @@
 # RetailAI-ZA 🛒📊
 
-> Machine Learning API for retail inventory forecasting using Prophet time-series models
+>  API for retail inventory forecasting using Prophet time-series models
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com/)
@@ -9,7 +9,7 @@
 
 ## 🎯 Overview
 
-Production-ready ML API for forecasting retail product demand across multiple stores. Built with FastAPI, Prophet, and containerized for cloud deployment.
+Production-ready  API for forecasting retail product demand across multiple stores. Built with FastAPI, Prophet, and containerized for cloud deployment.
 
 **Key Features:**
 - RESTful API with versioned endpoints (`/v1/`)
