@@ -1,10 +1,15 @@
+import os
 import pandas as pd
+import joblib
 from prophet import Prophet
 from sklearn.metrics import mean_absolute_percentage_error
 
 DATA_PATH = "data/features.csv"
+MODEL_DIR = "models/prophet"
 
-def train_per_series():
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+def train_and_save_models():
     df = pd.read_csv(DATA_PATH, parse_dates=["date"])
     df = df.rename(columns={"date": "ds", "units_sold": "y"})
 
@@ -27,8 +32,12 @@ def train_per_series():
         mape = mean_absolute_percentage_error(test["y"], forecast["yhat"])
         mapes.append(mape)
 
+        model_path = f"{MODEL_DIR}/{store}_{product}.pkl"
+        joblib.dump(model, model_path)
+
     print(f"Average MAPE across series: {sum(mapes)/len(mapes):.2%}")
+    print(f"Saved {len(mapes)} models to {MODEL_DIR}")
 
 if __name__ == "__main__":
-    train_per_series()
+    train_and_save_models()
 
