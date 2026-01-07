@@ -1,4 +1,4 @@
-# RetailAI-ZA 🛒📊
+# RetailAI-ZA
 
 >  API for retail inventory forecasting using Prophet time-series models
 
@@ -7,7 +7,7 @@
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🎯 Overview
+##  Overview
 
 Production-ready  API for forecasting retail product demand across multiple stores. Built with FastAPI, Prophet, and containerized for cloud deployment.
 
@@ -18,7 +18,7 @@ Production-ready  API for forecasting retail product demand across multiple stor
 - Docker containerization for reproducible deployments
 - OpenAPI/Swagger documentation
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Using Docker (Recommended)
 ```bash
@@ -40,7 +40,7 @@ python -m uvicorn api.main:app --reload --app-dir src
 # Access at http://localhost:8000
 ```
 
-## 📡 API Endpoints
+##  API Endpoints
 
 ### Health Check
 ```bash
@@ -73,7 +73,7 @@ Content-Type: application/json
 }
 ```
 
-## 🏗️ Architecture
+##  Architecture
 ```
 retail-inventory-ai/
 ├── src/
@@ -94,7 +94,7 @@ retail-inventory-ai/
 └── requirements.txt             # Python dependencies
 ```
 
-## 🧠 Model Registry Design
+##  Model Registry Design
 
 Models are stored in a hierarchical structure:
 ```
@@ -111,7 +111,7 @@ src/models/registry/
 - Supported forecast horizon
 - Frequency (daily/weekly)
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **API Framework:** FastAPI 0.115
 - **ML Model:** Facebook Prophet 1.1.5
@@ -119,7 +119,7 @@ src/models/registry/
 - **Containerization:** Docker, docker-compose
 - **Validation:** Pydantic v2
 
-## 📦 Deployment
+##  Deployment
 
 ### Docker
 See [README_DOCKER.md](README_DOCKER.md) for detailed Docker deployment instructions.
@@ -130,7 +130,7 @@ This API is compatible with:
 - **GCP:** Cloud Run, GKE
 - **Azure:** Container Apps, AKS
 
-## 🧪 Testing the API
+##  Testing the API
 
 ### Via Swagger UI
 Navigate to `http://localhost:8000/docs` for interactive API documentation.
@@ -146,7 +146,7 @@ curl -X POST "http://localhost:8000/v1/forecast" \
   }'
 ```
 
-## 📈 Future Enhancements
+##  Future Enhancements
 
 - [ ] Model versioning and A/B testing
 - [ ] CI/CD pipeline (GitHub Actions)
@@ -155,11 +155,11 @@ curl -X POST "http://localhost:8000/v1/forecast" \
 - [ ] Multi-model support (ARIMA, LSTM)
 - [ ] Database integration for model metadata
 
-## 📝 License
+##  License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 👤 Author
+##  Author
 
 **Joshua Phiri**
 - GitHub: [@phiri13](https://github.com/phiri13)
